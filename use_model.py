@@ -1,7 +1,8 @@
 from ultralytics import YOLO
+import cv2
 
 model = YOLO("./trained_model.pt")
-results = model.predict(["./test_img.jpg"])
+results = model.predict(["./snapshot.jpg"])
 
 # Process results list
 for result in results:
@@ -10,5 +11,4 @@ for result in results:
     keypoints = result.keypoints  # Keypoints object for pose outputs
     probs = result.probs  # Probs object for classification outputs
     obb = result.obb  # Oriented boxes object for OBB outputs
-    result.show()  # display to screen
-    result.save(filename="result.jpg")  # save to disk
+    result.save(filename="./result.jpg")  # save to disk
