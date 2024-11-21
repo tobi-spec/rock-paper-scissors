@@ -7,7 +7,12 @@ model = YOLO("./trained_model.pt")
 def game():
     player_sign = classify_image()
     computer_sign = random_choice()
-    return player_sign, computer_sign, determine_winner(player_sign, computer_sign)
+
+    result_list = list()
+    result_list.append(f"Player has {player_sign}")
+    result_list.append(f"Computer has {computer_sign}")
+    result_list.append(determine_winner(player_sign, computer_sign))
+    return result_list
 
 
 def classify_image():
