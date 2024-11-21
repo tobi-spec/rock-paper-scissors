@@ -13,14 +13,6 @@ black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1
 placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), media_type='image/png')
 video_capture = cv2.VideoCapture(0)
 
-video_styling = '''
-    width: 640px; 
-    height: 480px; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;   
-'''
-
 ui.add_css('''
     .nicegui-content {
         display: flex; 
@@ -29,10 +21,18 @@ ui.add_css('''
         background-color: #e6f7ff;
         font-family: Arial, sans-serif;
         color: #333;
-}''')
+        }
+    .player-video {    
+        width: 640px; 
+        height: 480px; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        }'''
+)
 
 def setup() -> None:
-    video_image = ui.interactive_image().style(video_styling)
+    video_image = ui.interactive_image().classes("player-video")
     ui.timer(interval=0.1, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
     ui.button('Capture Snapshot', on_click=capture_snapshot)
 
