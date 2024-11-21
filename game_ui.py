@@ -7,6 +7,8 @@ import numpy as np
 from fastapi import Response
 from nicegui import Client, app, core, run, ui
 
+from game_service import game
+
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
 placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), media_type='image/png')
 video_capture = cv2.VideoCapture(0)
@@ -47,6 +49,7 @@ async def capture_snapshot() -> None:
                 print("Failed to capture snapshot:", response.status_code)
         except Exception as e:
             print("Error capturing snapshot:", e)
+        print(game())
 
 
 def convert(frame: np.ndarray) -> bytes:
