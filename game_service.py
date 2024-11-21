@@ -4,6 +4,14 @@ from ultralytics import YOLO
 model = YOLO("./trained_model.pt")
 
 
+def game():
+    player_sign = classify_image()
+    computer_sign = random_choice()
+    print(player_sign)
+    print(computer_sign)
+    print(determine_winner(player_sign, computer_sign))
+
+
 def classify_image():
     result = model.predict(["./player_sign.jpg"])
     box = result[0].boxes
@@ -19,12 +27,29 @@ def classify_image():
 
 
 def random_choice():
-    return random.choice(["Scissors", "Stone", "Paper"])
+    return random.choice(["Scissors", "Rock", "Paper"])
 
 
-player_sign = classify_image()
-computer_sign = random_choice()
+def determine_winner(player, computer):
+    rules = {
+        "Rock": "Paper",
+        "Paper": "Scissors",
+        "Scissors": "Rock"
+    }
+    if player == computer:
+        return "Draw"
 
-print(player_sign)
-print(computer_sign)
+    if rules[player] == computer:
+        return f"computer wins!"
+    else:
+        return f"player wins!"
+
+
+
+
+
+
+
+
+
 
