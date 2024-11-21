@@ -12,6 +12,7 @@ from game_service import game
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
 placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), media_type='image/png')
 video_capture = cv2.VideoCapture(0)
+string_display = ui.column()
 
 
 def setup() -> None:
@@ -49,7 +50,10 @@ async def capture_snapshot() -> None:
                 print("Failed to capture snapshot:", response.status_code)
         except Exception as e:
             print("Error capturing snapshot:", e)
-        print(game())
+
+        results = game()
+        for string in results:
+            ui.label(string).classes('ml-4')
 
 
 def convert(frame: np.ndarray) -> bytes:
