@@ -40,7 +40,7 @@ async def capture_snapshot() -> None:
         try:
             response = await client.get(f'http://127.0.0.1:8080/video/frame')  # Adjust the URL as needed
             if response.status_code == 200:
-                with open('snapshot.jpg', 'wb') as f:
+                with open('player_sign.jpg', 'wb') as f:
                     f.write(response.content)
                 print("Snapshot saved as 'snapshot.jpg'")
             else:
