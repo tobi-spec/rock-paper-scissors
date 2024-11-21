@@ -15,10 +15,11 @@ video_capture = cv2.VideoCapture(0)
 
 ui.add_css(css)
 
+
 def setup() -> None:
     video_image = ui.interactive_image().classes("player-video")
     ui.timer(interval=0.1, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
-    ui.button('Capture Snapshot', on_click=capture_snapshot)
+    ui.button('Capture Snapshot', on_click=play_game)
 
     app.on_shutdown(cleanup(video_capture))
     signal.signal(signal.SIGINT, handle_sigint)
@@ -38,7 +39,14 @@ async def grab_video_frame() -> Response:
     return Response(content=jpeg, media_type='image/jpeg')
 
 
-async def capture_snapshot() -> None:
+async def play_game() -> None:
+    await make_snapshot()
+    results = game()
+    for string in results:
+        ui.label(string).classes('ml-4')
+
+
+async def make_snapshot() -> None:
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f'http://127.0.0.1:8080/video/frame')  # Adjust the URL as needed
@@ -50,10 +58,6 @@ async def capture_snapshot() -> None:
                 print("Failed to capture snapshot:", response.status_code)
         except Exception as e:
             print("Error capturing snapshot:", e)
-
-        results = game()
-        for string in results:
-            ui.label(string).classes('ml-4')
 
 
 def convert(frame: np.ndarray) -> bytes:
@@ -74,6 +78,7 @@ def handle_sigint(signum, frame) -> None:
 async def cleanup(video_capture) -> None:
     await disconnect()
     video_capture.release()
+
 
 app.on_startup(setup)
 ui.run()
