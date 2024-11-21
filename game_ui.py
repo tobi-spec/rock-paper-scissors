@@ -6,30 +6,14 @@ import httpx
 import numpy as np
 from fastapi import Response
 from nicegui import Client, app, core, run, ui
-
+from game_css import css
 from game_service import game
 
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
 placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), media_type='image/png')
 video_capture = cv2.VideoCapture(0)
 
-ui.add_css('''
-    .nicegui-content {
-        display: flex; 
-        justify-content: center; 
-        align-items: center;   
-        background-color: #e6f7ff;
-        font-family: Arial, sans-serif;
-        color: #333;
-        }
-    .player-video {    
-        width: 640px; 
-        height: 480px; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        }'''
-)
+ui.add_css(css)
 
 def setup() -> None:
     video_image = ui.interactive_image().classes("player-video")
