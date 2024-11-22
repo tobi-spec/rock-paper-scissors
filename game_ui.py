@@ -19,9 +19,9 @@ ui.add_css(css)
 def setup() -> None:
     video_image = ui.interactive_image().classes("player-video")
     ui.timer(interval=0.1, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
-    container = ui.card()
+    result_container = ui.card()
     counter_element = ui.card()
-    ui.button('Play!', on_click=lambda: play_game(container, counter_element))
+    ui.button('Play!', on_click=lambda: play_game(result_container, counter_element))
 
     app.on_shutdown(cleanup(video_capture))
     signal.signal(signal.SIGINT, handle_sigint)
@@ -41,21 +41,19 @@ async def grab_video_frame() -> Response:
     return Response(content=jpeg, media_type='image/jpeg')
 
 
-async def play_game(container, counter_element) -> None:
+async def play_game(result_container, counter_element) -> None:
     await make_snapshot()
     results = game()
     game_counter.count(results[2])
 
     empty_container(counter_element)
-    empty_container(container)
+    empty_container(result_container)
     populate_counter(counter_element)
-    populate_container(container, results)
+    populate_result(result_container, results)
 
 
-
-
-def populate_container(container, results):
-    with container:
+def populate_result(result_container, results):
+    with result_container:
         ui.label(results[0])
         ui.label(results[1])
         ui.label(results[2])
