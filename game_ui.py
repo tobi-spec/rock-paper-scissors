@@ -1,11 +1,15 @@
 import base64
 import signal
 import time
+from io import BytesIO
 import cv2
 import httpx
 import numpy as np
+from PIL import Image
 from fastapi import Response
 from nicegui import Client, app, core, run, ui
+from ultralytics import YOLO
+
 from game_css import css
 from game_service import game, GameCounter
 
@@ -14,6 +18,7 @@ placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), medi
 video_capture = cv2.VideoCapture(0)
 game_counter = GameCounter()
 ui.add_css(css)
+classifier_model = YOLO("./trained_model.pt")
 
 
 def setup() -> None:
@@ -32,13 +37,24 @@ async def grab_video_frame() -> Response:
     if not video_capture.isOpened():
         return placeholder
 
-    _, frame = await run.io_bound(video_capture.read)
-
-    if frame is None:
+    ret, frame = video_capture.read()
+    if not ret or frame is None:
         return placeholder
 
-    jpeg = await run.cpu_bound(convert, frame)
-    return Response(content=jpeg, media_type='image/jpeg')
+    labeled_image = classify_image(classifier_model, frame)
+    jpeg_buffer = BytesIO()
+    labeled_image.save(jpeg_buffer, format="JPEG")
+    jpeg_buffer.seek(0)
+
+    return Response(content=jpeg_buffer.getvalue(), media_type="image/jpeg")
+
+
+def classify_image(model, frame):
+    results = model(frame)
+    for result in results:
+        rendered_image = result.plot()
+        pil_image = Image.fromarray(cv2.cvtColor(rendered_image, cv2.COLOR_BGR2RGB))
+        return pil_image
 
 
 async def play_game(result_container, counter_element) -> None:
