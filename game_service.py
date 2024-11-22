@@ -48,6 +48,17 @@ def determine_winner(player, computer):
         return f"player wins!"
 
 
+class GameCounter:
+    def __init__(self):
+        self.player = 0
+        self.computer = 0
+
+    def count(self, result):
+        print(result)
+        if "player wins!" in result:
+            self.player += 1
+        if "computer wins!" in result:
+            self.computer += 1
 
 
 

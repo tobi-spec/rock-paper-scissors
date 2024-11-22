@@ -7,12 +7,12 @@ import numpy as np
 from fastapi import Response
 from nicegui import Client, app, core, run, ui
 from game_css import css
-from game_service import game
+from game_service import game, GameCounter
 
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
 placeholder = Response(content=base64.b64decode(black_1px.encode('ascii')), media_type='image/png')
 video_capture = cv2.VideoCapture(0)
-
+game_counter = GameCounter()
 ui.add_css(css)
 
 
@@ -20,7 +20,8 @@ def setup() -> None:
     video_image = ui.interactive_image().classes("player-video")
     ui.timer(interval=0.1, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
     container = ui.card()
-    ui.button('Play!', on_click=lambda: play_game(container))
+    counter_element = ui.card()
+    ui.button('Play!', on_click=lambda: play_game(container, counter_element))
 
     app.on_shutdown(cleanup(video_capture))
     signal.signal(signal.SIGINT, handle_sigint)
@@ -40,11 +41,17 @@ async def grab_video_frame() -> Response:
     return Response(content=jpeg, media_type='image/jpeg')
 
 
-async def play_game(container) -> None:
+async def play_game(container, counter_element) -> None:
     await make_snapshot()
     results = game()
+    game_counter.count(results[2])
+
+    empty_container(counter_element)
     empty_container(container)
+    populate_counter(counter_element)
     populate_container(container, results)
+
+
 
 
 def populate_container(container, results):
@@ -52,6 +59,12 @@ def populate_container(container, results):
         ui.label(results[0])
         ui.label(results[1])
         ui.label(results[2])
+
+
+def populate_counter(counter_element):
+    with counter_element:
+        ui.label(f"Player: {game_counter.player}")
+        ui.label(f"Computer: {game_counter.computer}")
 
 
 def empty_container(container):
