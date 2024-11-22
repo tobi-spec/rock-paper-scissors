@@ -20,7 +20,7 @@ def setup() -> None:
     video_image = ui.interactive_image().classes("player-video")
     ui.timer(interval=0.1, callback=lambda: video_image.set_source(f'/video/frame?{time.time()}'))
     container = ui.card()
-    ui.button('Capture Snapshot', on_click=lambda: play_game(container))
+    ui.button('Play!', on_click=lambda: play_game(container))
 
     app.on_shutdown(cleanup(video_capture))
     signal.signal(signal.SIGINT, handle_sigint)
@@ -43,7 +43,7 @@ async def grab_video_frame() -> Response:
 async def play_game(container) -> None:
     await make_snapshot()
     results = game()
-    remove_children(container)
+    empty_container(container)
     populate_container(container, results)
 
 
@@ -54,7 +54,7 @@ def populate_container(container, results):
         ui.label(results[2])
 
 
-def remove_children(container):
+def empty_container(container):
     number_of_children = len(container.default_slot.children)
     for i in range(number_of_children):
         container.remove(0)  # List of children is update after every remove
