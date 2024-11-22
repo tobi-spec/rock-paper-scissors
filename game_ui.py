@@ -42,8 +42,22 @@ async def grab_video_frame() -> Response:
 async def play_game() -> None:
     await make_snapshot()
     results = game()
-    for string in results:
-        ui.label(string).classes('ml-4')
+    populate_container(results)
+
+
+def populate_container(results):
+    container = ui.card()
+    with container:
+        ui.label(results[0])
+        ui.label(results[1])
+        ui.label(results[2])
+    ui.button('Delete', on_click=lambda: remove_children(container))
+
+
+def remove_children(container):
+    number_of_children = len(container.default_slot.children)
+    for i in range(number_of_children):
+        container.remove(0)  # List of children is update after every remove
 
 
 async def make_snapshot() -> None:
