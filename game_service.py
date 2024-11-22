@@ -7,8 +7,8 @@ model = YOLO("./trained_model.pt")
 ACTIONS = ["Scissors", "Rock", "Paper"]
 ACTION_TO_INDEX = {action: i for i, action in enumerate(ACTIONS)}
 Q_TABLE = np.zeros((len(ACTIONS), len(ACTIONS)))
-ALPHA = 0.1  # Learning rate
-GAMMA = 0.9  # Discount factor
+ALPHA = 0.5  # Learning rate
+GAMMA = 0.2  # Discount factor
 EPSILON = 0.5  # Exploration rat
 
 REWARDS = {
@@ -26,17 +26,25 @@ REWARDS = {
 
 def game():
     player_sign = classify_image()
-
     if player_sign not in ACTIONS:
         player_sign = random.choice(ACTIONS)
+
     state_index = ACTION_TO_INDEX[player_sign]
     computer_sign = choose_action(state_index)
 
-    result_list = list()
-    result_list.append(f"Player has {player_sign}")
-    result_list.append(f"Computer has {computer_sign}")
-    result_list.append(determine_winner(player_sign, computer_sign))
-    return result_list
+    result = determine_winner(player_sign, computer_sign)
+
+    reward = REWARDS[(player_sign, computer_sign)]
+    next_state_index = state_index
+
+    update_q_table(state_index, ACTION_TO_INDEX[computer_sign], reward, next_state_index)
+    print(Q_TABLE)
+
+    return [
+        f"Player has {player_sign}",
+        f"Computer has {computer_sign}",
+        result
+    ]
 
 
 def classify_image():
@@ -54,7 +62,6 @@ def classify_image():
 
 
 def choose_action(state_index):
-    """Choose an action using epsilon-greedy policy."""
     if random.uniform(0, 1) < EPSILON:
         return random.choice(ACTIONS)  # Explore
     else:
@@ -62,7 +69,6 @@ def choose_action(state_index):
 
 
 def update_q_table(state_index, action_index, reward, next_state_index):
-    """Update the Q-value for a given state-action pair."""
     best_next_action = np.max(Q_TABLE[next_state_index])  # Best future action
     Q_TABLE[state_index, action_index] = (
         Q_TABLE[state_index, action_index]
@@ -100,11 +106,3 @@ class GameCounter:
             self.player += 1
         if "computer wins!" in result:
             self.computer += 1
-
-
-
-
-
-
-
-
