@@ -40,16 +40,14 @@ async def grab_video_frame() -> Response:
     ret, frame = video_capture.read()
     if not ret or frame is None:
         return placeholder
-
-    labeled_image = classify_image(classifier_model, frame)
+    labeled_image = label_image(classifier_model, frame)
     jpeg_buffer = BytesIO()
     labeled_image.save(jpeg_buffer, format="JPEG")
-    jpeg_buffer.seek(0)
 
     return Response(content=jpeg_buffer.getvalue(), media_type="image/jpeg")
 
 
-def classify_image(model, frame):
+def label_image(model, frame):
     results = model(frame)
     for result in results:
         rendered_image = result.plot()
