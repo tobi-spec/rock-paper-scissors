@@ -1,3 +1,5 @@
 .idea
 venv
 __pycache__
+runs
+rock-paper-scissors.v14i.yolov11

@@ -1,0 +1,7 @@
+ultralytics
+numpy
+pillow
+opencv-python
+httpx
+fastapi
+nicegui
