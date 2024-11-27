@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import torch
 
+# source for dataset: https://universe.roboflow.com/roboflow-58fyf/rock-paper-scissors-sxsw
 if __name__ == '__main__':
     print(torch.cuda.is_available())
 
