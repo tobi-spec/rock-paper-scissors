@@ -56,8 +56,8 @@ def label_image(model, frame):
 
 
 async def play_game(result_container, counter_element) -> None:
-    await make_snapshot()
-    results = game()
+    image = await make_snapshot()
+    results = game(image)
     game_counter.count(results[2])
 
     empty_container(counter_element)
@@ -90,9 +90,8 @@ async def make_snapshot() -> None:
         try:
             response = await client.get(f'http://127.0.0.1:8080/video/frame')  # Adjust the URL as needed
             if response.status_code == 200:
-                with open('player_sign.jpg', 'wb') as f:
-                    f.write(response.content)
                 print("Snapshot saved as 'snapshot.jpg'")
+                return response.content
             else:
                 print("Failed to capture snapshot:", response.status_code)
         except Exception as e:

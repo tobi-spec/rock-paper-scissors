@@ -1,6 +1,8 @@
+import io
 import random
 from ultralytics import YOLO
 import numpy as np
+from PIL import Image
 
 model = YOLO("./trained_model.pt")
 
@@ -24,8 +26,8 @@ REWARDS = {
 }
 
 
-def game():
-    player_sign = classify_image()
+def game(image):
+    player_sign = classify_image(image)
     if player_sign not in ACTIONS:
         player_sign = random.choice(ACTIONS)
 
@@ -47,10 +49,10 @@ def game():
     ]
 
 
-def classify_image():
-    result = model.predict(["./player_sign.jpg"])
+def classify_image(image):
+    result = model.predict([Image.open(io.BytesIO(image))])
     box = result[0].boxes
-    result[0].save(filename="./player_sign_labeled.jpg")
+    result[0].save(filename="./player_sign_labeled.jpg") # Just for manuel testing :)
 
     if box:
         label = box.cls
